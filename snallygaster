@@ -17,6 +17,7 @@ import socket
 import urllib.parse
 import warnings
 import json
+import textwrap
 
 import bs4
 import dns.resolver
@@ -741,29 +742,69 @@ def new_excepthook(etype, value, traceback):
 
 sys.excepthook = new_excepthook
 
+parser = argparse.ArgumentParser(
+    prog='Snallygaster',
+    add_help=False,
+    formatter_class=argparse.RawDescriptionHelpFormatter,
+    description=textwrap.dedent('''\
+        ================================================================================================
+        ||                                                                                            ||
+        ||                                  WELCOME TO SNALLYGASTER!!                                 ||
+        ||                                                                                            ||
+        ||============================================================================================||
+        ||                                                                                            ||
+        ||  Options                               | Command line examples (can be more than 1 url)    ||
+        ||  -------                               | ----------------------------------------------    ||
+        ||  1. Hostname to scan                   | (python snallygaster www.example.com)             ||
+        ||                                        |                                                   ||
+        ||  2. Comma-separated tests to run       | (python snallygaster www.example.com -t)          ||
+        ||                                        |                                                   ||
+        ||  3. User agent to send                 | (python snallygaster www.example.com --useragent) ||
+        ||                                        |                                                   ||
+        ||  4. Skip scanning www.[host]           | (python snallygaster www.example.com --nowww)     ||
+        ||                                        |                                                   ||
+        ||  5. Don't scan http                    | (python snallygaster www.example.com --nohttp)    ||
+        ||                                        |                                                   ||
+        ||  6. Don't scan https                   | (python snallygaster www.example.com --nohttps)   ||
+        ||                                        |                                                   ||
+        ||  7. Enable all info tests              | (python snallygaster www.example.com -i)          ||
+        ||     (no bugs/security vulnerabilities) |                                                   ||
+        ||                                        |                                                   ||
+        ||  8. Show noisy messages that indicate  | (python snallygaster www.example.com -n)          ||
+        ||     boring bugs, but no security issue | 	                                              ||
+        ||                                        |                                                   ||
+        ||  9. Base path on server                | (python snallygaster www.example.com -p)          ||
+        ||     (scans root dir by default)        |                                                   ||
+        ||                                        |                                                   ||
+        ||  10. Produce JSON output               | (python snallygaster www.example.com -j)          ||
+        ||                                        |                                                   ||
+        ||  11. Show detailed debugging info      | (python snallygaster www.example.com -d)          ||
+        ||                                                                                            ||
+        ================================================================================================
+        '''))
 
-parser = argparse.ArgumentParser()
-parser.add_argument("hosts", nargs='*', help="hostname to scan")
+parser.add_argument("hosts", nargs='*', help=argparse.SUPPRESS) # "hostname to scan"
 parser.add_argument("-t", "--tests", nargs=1,
-                    help="Comma-separated tests to run.")
+                    help=argparse.SUPPRESS) # "Comma-separated tests to run."
 parser.add_argument("--useragent", nargs=1,
-                    help="User agent to send")
+                    help=argparse.SUPPRESS) # "User agent to send"
 parser.add_argument("--nowww", action="store_true",
-                    help="Skip scanning www.[host]")
+                    help=argparse.SUPPRESS) # "Skip scanning www.[host]"
 parser.add_argument("--nohttp", action="store_true",
-                    help="Don't scan http")
+                    help=argparse.SUPPRESS) # "Don't scan http"
 parser.add_argument("--nohttps", action="store_true",
-                    help="Don't scan https")
+                    help=argparse.SUPPRESS) # "Don't scan https"
 parser.add_argument("-i", "--info", action="store_true",
-                    help="Enable all info tests (no bugs/security vulnerabilities)")
+                    help=argparse.SUPPRESS) # "Enable all info tests (no bugs/security vulnerabilities)"
 parser.add_argument("-n", "--noisy", action="store_true",
-                    help="Show noisy messages that indicate boring bugs, but no security issue")
+                    help=argparse.SUPPRESS) # "Show noisy messages that indicate boring bugs, but no security issue"
 parser.add_argument("-p", "--path", default='', action="store", type=str,
-                    help="Base path on server (scans root dir by default)")
+                    help=argparse.SUPPRESS) # "Base path on server (scans root dir by default)"
 parser.add_argument("-j", "--json", action="store_true",
-                    help="Produce JSON output")
+                    help=argparse.SUPPRESS) # "Produce JSON output"
 parser.add_argument("-d", "--debug", action="store_true",
-                    help="Show detailed debugging info")
+                    help=argparse.SUPPRESS) # "Show detailed debugging info"
+parser.add_argument("-h", "--help", action="help", help=argparse.SUPPRESS)
 args = parser.parse_args()
 
 # Initializing global pool manager
