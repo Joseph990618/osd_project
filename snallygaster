@@ -515,7 +515,7 @@ def test_optionsbleed(url):
         return
     if allow == "":
         pout("options_empty", url, noisymsg=True)
-        # message = "options_empty", str(url), noisymsg=True ************
+        message = "options_empty", str(url), "noisymsg=True"
         # logging.info(message)
     elif re.match("^[a-zA-Z]+(-[a-zA-Z]+)? *(, *[a-zA-Z]+(-[a-zA-Z]+)? *)*$", allow):
         z = [x.strip() for x in allow.split(',')]
@@ -869,46 +869,7 @@ def new_excepthook(etype, value, traceback):
 
 sys.excepthook = new_excepthook
 
-parser = argparse.ArgumentParser(
-    prog='Snallygaster',
-    add_help=False,
-    formatter_class=argparse.RawDescriptionHelpFormatter,
-    description=textwrap.dedent('''\
-        ================================================================================================
-        ||                                                                                            ||
-        ||                                  WELCOME TO SNALLYGASTER!!                                 ||
-        ||                                                                                            ||
-        ||============================================================================================||
-        ||                                        |                                                   ||
-        ||  Options                               | Command line examples (can be more than 1 url)    ||
-        ||  -------                               | ----------------------------------------------    ||
-        ||  1. Hostname to scan                   | (python snallygaster www.example.com)             ||
-        ||                                        |                                                   ||
-        ||  2. Comma-separated tests to run       | (python snallygaster -t www.example.com)          ||
-        ||                                        |                                                   ||
-        ||  3. User agent to send                 | (python snallygaster --useragent www.example.com) ||
-        ||                                        |                                                   ||
-        ||  4. Skip scanning www.[host]           | (python snallygaster --nowww example.com)         ||
-        ||                                        |                                                   ||
-        ||  5. Don't scan http                    | (python snallygaster --nohttp www.example.com)    ||
-        ||                                        |                                                   ||
-        ||  6. Don't scan https                   | (python snallygaster --nohttps www.example.com)   ||
-        ||                                        |                                                   ||
-        ||  7. Enable all info tests              | (python snallygaster -i www.example.com)          ||
-        ||     (no bugs/security vulnerabilities) |                                                   ||
-        ||                                        |                                                   ||
-        ||  8. Show noisy messages that indicate  | (python snallygaster -n www.example.com)          ||
-        ||     boring bugs, but no security issue | 	                                              ||
-        ||                                        |                                                   ||
-        ||  9. Base path on server                | (python snallygaster -p www.example.com)          ||
-        ||     (scans root dir by default)        |                                                   ||
-        ||                                        |                                                   ||
-        ||  10. Produce JSON output               | (python snallygaster -j www.example.com)          ||
-        ||                                        |                                                   ||
-        ||  11. Show detailed debugging info      | (python snallygaster -d www.example.com)          ||
-        ||                                        |                                                   ||
-        ================================================================================================
-        '''))
+parser = argparse.ArgumentParser(prog='Snallygaster')
 
 parser.add_argument("hosts", nargs='*', help=argparse.SUPPRESS) # "hostname to scan"
 parser.add_argument("-t", "--tests", nargs=1,
@@ -931,8 +892,92 @@ parser.add_argument("-j", "--json", action="store_true",
                     help=argparse.SUPPRESS) # "Produce JSON output"
 parser.add_argument("-d", "--debug", action="store_true",
                     help=argparse.SUPPRESS) # "Show detailed debugging info"
-parser.add_argument("-menu", action="help", help=argparse.SUPPRESS)
+parser.add_argument("-menu", action="store_true", help="English Menu - python snallygaster -menu")
+parser.add_argument("-menuzh", action="store_true", help="华语菜单 - python snallygaster -menuzh")
 args = parser.parse_args()
+
+if args.menu == True:
+    message = "\n\n================================================================================================\n"
+    message += "||                                                                                            ||\n"
+    message += "||                                  WELCOME TO SNALLYGASTER!!                                 ||\n"
+    message += "||                                                                                            ||\n"
+    message += "||============================================================================================||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  Options                               | Command line examples (can be more than 1 url)    ||\n"
+    message += "||  -------                               | ----------------------------------------------    ||\n"
+    message += "||  1. Hostname to scan                   | (python snallygaster www.example.com)             ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  2. Comma-separated tests to run       | (python snallygaster -t www.example.com)          ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  3. User agent to send                 | (python snallygaster --useragent www.example.com) ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  4. Skip scanning www.[host]           | (python snallygaster --nowww example.com)         ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  5. Don't scan http                    | (python snallygaster --nohttp www.example.com)    ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  6. Don't scan https                   | (python snallygaster --nohttps www.example.com)   ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  7. Enable all info tests              | (python snallygaster -i www.example.com)          ||\n"
+    message += "||     (no bugs/security vulnerabilities) |                                                   ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  8. Show noisy messages that indicate  | (python snallygaster -n www.example.com)          ||\n"
+    message += "||     boring bugs, but no security issue | 	                                              ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  9. Base path on server                | (python snallygaster -p www.example.com)          ||\n"
+    message += "||     (scans root dir by default)        |                                                   ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  10. Produce JSON output               | (python snallygaster -j www.example.com)          ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  11. Show detailed debugging info      | (python snallygaster -d www.example.com)          ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||============================================================================================||\n"
+    message += "||                                                                                            ||\n"
+    message += "||                     提示: 华语菜单请输入 'python snallygaster -menuzh'                     ||\n"
+    message += "||                                                                                            ||\n" 
+    message += "================================================================================================\n"
+    print(message)
+
+if args.menuzh == True:
+    message = "\n\n================================================================================================\n"
+    message += "||                                                                                            ||\n"
+    message += "||                                  欢迎使用SNALLYGASTER!!                                    ||\n"
+    message += "||                                                                                            ||\n"
+    message += "||============================================================================================||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  选项                                  | Command line examples (can be more than 1 url)    ||\n"
+    message += "||  ----                                  | ----------------------------------------------    ||\n"
+    message += "||  1. Hostname to scan                   | (python snallygaster www.example.com)             ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  2. Comma-separated tests to run       | (python snallygaster -t www.example.com)          ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  3. User agent to send                 | (python snallygaster --useragent www.example.com) ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  4. Skip scanning www.[host]           | (python snallygaster --nowww example.com)         ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  5. Don't scan http                    | (python snallygaster --nohttp www.example.com)    ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  6. Don't scan https                   | (python snallygaster --nohttps www.example.com)   ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  7. Enable all info tests              | (python snallygaster -i www.example.com)          ||\n"
+    message += "||     (no bugs/security vulnerabilities) |                                                   ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  8. Show noisy messages that indicate  | (python snallygaster -n www.example.com)          ||\n"
+    message += "||     boring bugs, but no security issue | 	                                              ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  9. Base path on server                | (python snallygaster -p www.example.com)          ||\n"
+    message += "||     (scans root dir by default)        |                                                   ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  10. Produce JSON output               | (python snallygaster -j www.example.com)          ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  11. Show detailed debugging info      | (python snallygaster -d www.example.com)          ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||============================================================================================||\n"
+    message += "||                                                                                            ||\n"
+    message += "||                  Tips: English Menu please type 'python snallygaster -menu'                ||\n"
+    message += "||                                                                                            ||\n" 
+    message += "================================================================================================\n"
+    print(message)
+
 
 # Initializing global pool manager
 user_agent = {'user-agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:53.0) Gecko/20100101 Firefox/53.0'}
