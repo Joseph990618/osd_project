@@ -965,7 +965,7 @@ if args.menuzh == True:
     message += "||     不过没有安全问题                   | 	                                              ||\n"
     message += "||                                        |                                                   ||\n"
     message += "||  9. 伺服器的基础路径                   | (python snallygaster -p www.example.com)          ||\n"
-    message += "||     (scans root dir by default)        |                                                   ||\n"
+    message += "||     (根目录为基础扫描)                 |                                                   ||\n"
     message += "||                                        |                                                   ||\n"
     message += "||  10. 生成JSON输出                      | (python snallygaster -j www.example.com)          ||\n"
     message += "||                                        |                                                   ||\n"
