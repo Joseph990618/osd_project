@@ -17,7 +17,6 @@ import socket
 import urllib.parse
 import warnings
 import json
-import textwrap
 import logging
 
 import bs4
@@ -205,7 +204,7 @@ def dnscache(qhost):
     if qhost in dns_cache:
         return dns_cache[qhost]
     try:
-        socket.inet_aton(qhost)
+        socket.inet_aton(qhost)@staticmethod
         dns_cache[qhost] = qhost
         return qhost
     except socket.error:
@@ -516,21 +515,21 @@ def test_optionsbleed(url):
     if allow == "":
         pout("options_empty", url, noisymsg=True)
         message = "options_empty", str(url), "noisymsg=True"
-        # logging.info(message)
+        logging.info(message)
     elif re.match("^[a-zA-Z]+(-[a-zA-Z]+)? *(, *[a-zA-Z]+(-[a-zA-Z]+)? *)*$", allow):
         z = [x.strip() for x in allow.split(',')]
         if len(z) > len(set(z)):
             pout("options_duplicates", url, escape(allow), noisymsg=True)
-            # message = "options_duplicates", str(url), escape(allow), noisymsg=True ************
-            # logging.info(message)
+            message = str("options_duplicates", str(url), escape(allow), "noisymsg=True")
+            logging.info(message)
     elif re.match("^[a-zA-Z]+(-[a-zA-Z]+)? *( +[a-zA-Z]+(-[a-zA-Z]+)? *)+$", allow):
         pout("options_spaces", url, escape(allow))
-        # message = "options_spaces", str(url), escape(allow) ************
-        # logging.info(message)
+        message = str("options_spaces", str(url), escape(allow))
+        logging.info(message)
     else:
         pout("optionsbleed", url, escape(allow))
-        # message = "options_duplicates", str(url), escape(allow), noisymsg=True ************
-        # logging.info(message)
+        message = str("options_duplicates", str(url), escape(allow), "noisymsg=True")
+        logging.info(message)
 
 
 @DEFAULT
