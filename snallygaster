@@ -17,6 +17,7 @@ import socket
 import urllib.parse
 import warnings
 import json
+import logging
 
 import bs4
 import dns.resolver
@@ -45,6 +46,8 @@ warnings.filterwarnings("ignore", category=UserWarning, module='bs4')
 # even if they are shipped with invalid certificates.
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+# setup log format
+logging.basicConfig(filename="logfile.log", level=logging.INFO, format='%(process)d - %(asctime)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S')
 
 def DEFAULT(f):
     setattr(f, '_is_default_test', True)
@@ -201,7 +204,7 @@ def dnscache(qhost):
     if qhost in dns_cache:
         return dns_cache[qhost]
     try:
-        socket.inet_aton(qhost)
+        socket.inet_aton(qhost)@staticmethod
         dns_cache[qhost] = qhost
         return qhost
     except socket.error:
@@ -220,6 +223,8 @@ def test_lfm_php(url):
     r = fetcher(url + '/lfm.php')
     if 'Lazy File Manager' in r:
         pout("lfm_php", url + "/lfm.php")
+        message = "lfm_php", str(url) + "/lfm.php"
+        logging.info(message)
 
 
 @DEFAULT
@@ -227,6 +232,8 @@ def test_idea(url):
     r = fetcher(url + '/.idea/WebServers.xml')
     if 'name="WebServers"' in r:
         pout("idea", url + "/.idea/WebServers.xml")
+        message = "idea", str(url) + "/.idea/WebServers.xml"
+        logging.info(message)
 
 
 @DEFAULT
@@ -234,6 +241,8 @@ def test_symfony_databases_yml(url):
     r = fetcher(url + '/config/databases.yml')
     if 'class:' in r and 'param:' in r:
         pout("symfony_databases_yml", url + "/config/databases.yml")
+        message = "symfony_databases_yml", str(url) + "/config/databases.yml"
+        logging.info(message)
 
 
 @DEFAULT
@@ -241,6 +250,8 @@ def test_rails_database_yml(url):
     r = fetcher(url + '/config/database.yml')
     if 'adapter:' in r and 'database:' in r:
         pout("rails_database_yml", url + "/config/database.yml")
+        message = "rails_database_yml", str(url) + "/config/database.yml"
+        logging.info(message)
 
 
 @DEFAULT
@@ -248,6 +259,8 @@ def test_git_dir(url):
     r = fetcher(url + '/.git/config')
     if '[core]' in r:
         pout("git_dir", url + "/.git/config")
+        message = "git_dir", str(url) + "/.git/config"
+        logging.info(message)
 
 
 @DEFAULT
@@ -256,6 +269,8 @@ def test_svn_dir(url):
     try:
         if (str)((int)(r)) + "\n" == r:
             pout("svn_dir", url + "/.svn/entries")
+            message = "svn_dir", str(url) + "/.svn/entries"
+            logging.info(message)
     except ValueError:
         pass
 
@@ -266,6 +281,8 @@ def test_cvs_dir(url):
     # this is a bit hacky, but should be good enough to avoid FPs
     if len(r.split("\n")) == 2 and ':' in r and '<' not in r:
         pout("cvs_dir", url + "/CVS/Root")
+        message = "cvs_dir", str(url) + "/CVS/Root"
+        logging.info(message)
 
 
 @DEFAULT
@@ -273,6 +290,8 @@ def test_apache_server_status(url):
     r = fetcher(url + '/server-status')
     if 'Apache Status' in r:
         pout("apache_server_status", url + "/server-status")
+        message = "apache_server_status", str(url) + "/server-status"
+        logging.info(message)
 
 
 @DEFAULT
@@ -280,6 +299,8 @@ def test_coredump(url):
     r = fetchpartial(url + "/core", 20, binary=True)
     if r and r[0:4] == b'\x7fELF':
         pout("coredump", url + "/core")
+        message = "coredump", str(url) + "/core"
+        logging.info(message)
 
 
 @DEFAULT
@@ -287,6 +308,8 @@ def test_sftp_config(url):
     r = fetcher(url + '/sftp-config.json')
     if '"type":' in r and 'ftp' in r and '"save_before_upload"' in r:
         pout("sftp_config", url + "/sftp-config.json")
+        message = "sftp_config", str(url) + "/sftp-config.json"
+        logging.info(message)
 
 
 @DEFAULT
@@ -295,6 +318,8 @@ def test_wsftp_ini(url):
         r = fetcher(url + "/" + fn)
         if '[_config_]' in r:
             pout("wsftp_ini", url + "/" + fn)
+            message = "wsftp_ini", str(url) + "/" + str(fn)
+            logging.info(message)
 
 
 @DEFAULT
@@ -303,6 +328,8 @@ def test_filezilla_xml(url):
         r = fetcher(url + "/" + fn)
         if '<FileZilla' in r:
             pout("filezilla_xml", url + "/" + fn)
+            message = "filezilla_xml", str(url) + "/" + str(fn)
+            logging.info(message)
 
 
 @DEFAULT
@@ -311,6 +338,8 @@ def test_winscp_ini(url):
         r = fetcher(url + "/" + fn)
         if '[Configuration]' in r:
             pout("winscp_ini", "%s/%s" % (url, fn))
+            message = str("winscp_ini", "%s/%s" % (url, fn))
+            logging.info(message)
 
 
 @DEFAULT
@@ -318,6 +347,8 @@ def test_ds_store(url):
     r = fetcher(url + '/.DS_Store', binary=True)
     if r[0:8] == b'\x00\x00\x00\x01Bud1':
         pout("ds_store", url + "/.DS_Store")
+        message = "ds_store", str(url) + "/.DS_Store"
+        logging.info(message)
 
 
 @DEFAULT
@@ -325,6 +356,8 @@ def test_php_cs_cache(url):
     r = fetcher(url + '/.php_cs.cache')
     if r[0:8] == '{"php":"':
         pout("php_cs_cache", url + "/.php_cs.cache")
+        message = "php_cs_cache", str(url) + "/.php_cs.cache"
+        logging.info(message)
 
 
 @DEFAULT
@@ -342,6 +375,8 @@ def test_backupfiles(url):
             r = fetcher(furl)
             if any(m in r for m in ['<?php', '<?=']):
                 pout("backup_files", furl)
+                message = "backup_files", str(furl)
+                logging.info(message)
 
 
 @DEFAULT
@@ -353,15 +388,23 @@ def test_backup_archive(url):
         r = fetchpartial(url + "/" + fn + ".zip", 2, binary=True)
         if r == b'PK':
             pout("backup_archive", url + "/" + fn + ".zip")
+            message = "backup_archive", str(url) + "/" + str(fn) + ".zip"
+            logging.info(message)
         r = fetchpartial(url + "/" + fn + ".tar.gz", 3, binary=True)
         if r == b'\x1f\x8b\x08':
             pout("backup_archive", url + "/" + fn + ".tar.gz")
+            message = "backup_archive", str(url) + "/" + str(fn) + ".tar.gz"
+            logging.info(message)
         r = fetchpartial(url + "/" + fn + ".tar.bz2", 3, binary=True)
         if r in [b'BZh', b'BZ0']:
             pout("backup_archive", url + "/" + fn + ".tar.bz2")
+            message = "backup_archive", str(url) + "/" + str(fn) + ".tar.bz2"
+            logging.info(message)
         r = fetchpartial(url + "/" + fn + ".tar.xz", 6, binary=True)
         if r == b'\xFD7zXZ\x00':
             pout("backup_archive", url + "/" + fn + ".tar.xz")
+            message = "backup_archive", str(url) + "/" + str(fn) + ".tar.xz"
+            logging.info(message)
 
 
 @DEFAULT
@@ -369,6 +412,8 @@ def test_deadjoe(url):
     r = fetcher(url + '/DEADJOE')
     if 'in JOE when it aborted' in r:
         pout("deadjoe", url + "/DEADJOE")
+        message = "deadjoe", str(url) + "/DEADJOE"
+        logging.info(message)
 
 
 @DEFAULT
@@ -386,15 +431,23 @@ def test_sql_dump(url):
             r = fetchpartial(url + "/" + f, 4000)
             if any(m in r for m in ['INSERT INTO']):
                 pout("sql_dump", url + "/" + f)
+                message = "sql_dump", str(url) + "/" + str(f)
+                logging.info(message)
         r = fetchpartial(url + "/" + f + ".gz", 3, binary=True)
         if r == b'\x1f\x8b\x08':
             pout("sql_dump_gz", url + "/" + f + ".gz")
+            message = "sql_dump_gz", str(url) + "/" + str(f) + ".gz"
+            logging.info(message)
         r = fetchpartial(url + "/" + f + ".bz2", 3, binary=True)
         if r in [b'BZh', b'BZ0']:
             pout("sql_dump_bz", url + "/" + f + ".bz2")
+            message = "sql_dump_bz", str(url) + "/" + str(f) + ".bz2"
+            logging.info(message)
         r = fetchpartial(url + "/" + f + ".xz", 6, binary=True)
         if r == b'\xFD7zXZ\x00':
             pout("sql_dump_xz", url + "/" + f + ".xz")
+            message = "sql_dump_xz", str(url) + "/" + str(f) + ".xz"
+            logging.info(message)
 
 
 @DEFAULT
@@ -402,6 +455,8 @@ def test_bitcoin_wallet(url):
     r = fetchpartial(url + "/wallet.dat", 16, binary=True)
     if r and len(r) == 16 and r[12:] == b'b1\x05\x00':
         pout("bitcoin_wallet", url + "/wallet.dat")
+        message = "bitcoin_wallet", str(url) + "/wallet.dat"
+        logging.info(message)
 
 
 @DEFAULT
@@ -410,6 +465,8 @@ def test_drupal_backup_migrate(url):
     if 'this file should not be publicly accessible' in r:
         pout("drupal_backup_migrate",
              url + "/sites/default/private/files/backup_migrate/scheduled/test.txt")
+        message = "drupal_backup_migrate", str(url) + "/sites/default/private/files/backup_migrate/scheduled/test.txt"
+        logging.info(message)
 
 
 @DEFAULT
@@ -417,6 +474,8 @@ def test_magento_config(url):
     r = fetcher(url + '/app/etc/local.xml')
     if '<config' in r and 'Mage' in r:
         pout("magento_config", url + "/app/etc/local.xml")
+        message = "magento_config", str(url) + "/app/etc/local.xml"
+        logging.info(message)
 
 
 @DEFAULT
@@ -428,6 +487,8 @@ def test_xaa(url):
     # If output is larger than 10 MB it's likely a true positive.
     if s > 10000000:
         pout("xaa", url + "/xaa")
+        message = "xaa", str(url) + "/xaa"
+        logging.info(message)
         return
     # Check for signs of common compression formats (gz, bzip2, xz, zstd, zip).
     if (r[0:3] == b'\x1f\x8b\x08'
@@ -435,6 +496,8 @@ def test_xaa(url):
             or r[0:6] == b'\xFD7zXZ\x00'
             or r[0:4] in [b'\x28\xB5\x2F\xFD', b'PK\x03\x04']):
         pout("xaa", url + "/xaa")
+        message = "xaa", str(url) + "/xaa"
+        logging.info(message)
 
 
 @DEFAULT
@@ -451,14 +514,22 @@ def test_optionsbleed(url):
         return
     if allow == "":
         pout("options_empty", url, noisymsg=True)
+        message = "options_empty", str(url), "noisymsg=True"
+        logging.info(message)
     elif re.match("^[a-zA-Z]+(-[a-zA-Z]+)? *(, *[a-zA-Z]+(-[a-zA-Z]+)? *)*$", allow):
         z = [x.strip() for x in allow.split(',')]
         if len(z) > len(set(z)):
             pout("options_duplicates", url, escape(allow), noisymsg=True)
+            message = str("options_duplicates", str(url), escape(allow), "noisymsg=True")
+            logging.info(message)
     elif re.match("^[a-zA-Z]+(-[a-zA-Z]+)? *( +[a-zA-Z]+(-[a-zA-Z]+)? *)+$", allow):
         pout("options_spaces", url, escape(allow))
+        message = str("options_spaces", str(url), escape(allow))
+        logging.info(message)
     else:
         pout("optionsbleed", url, escape(allow))
+        message = str("options_duplicates", str(url), escape(allow), "noisymsg=True")
+        logging.info(message)
 
 
 @DEFAULT
@@ -470,12 +541,20 @@ def test_privatekey(url):
         r = fetcher(url + "/" + fn)
         if 'BEGIN PRIVATE KEY' in r:
             pout("privatekey_pkcs8", "%s/%s" % (url, fn))
+            message = str("privatekey_pkcs8", "%s/%s" % (url, fn))
+            logging.info(message)
         if 'BEGIN RSA PRIVATE KEY' in r:
             pout("privatekey_rsa", "%s/%s" % (url, fn))
+            message = str("privatekey_rsa", "%s/%s" % (url, fn))
+            logging.info(message)
         if 'BEGIN DSA PRIVATE KEY' in r:
             pout("privatekey_dsa", "%s/%s" % (url, fn))
+            message = str("privatekey_dsa", "%s/%s" % (url, fn))
+            logging.info(message)
         if 'BEGIN EC PRIVATE KEY' in r:
             pout("privatekey_ec", "%s/%s" % (url, fn))
+            message = str("privatekey_ec", "%s/%s" % (url, fn))
+            logging.info(message)
 
 
 @DEFAULT
@@ -484,10 +563,16 @@ def test_sshkey(url):
         r = fetcher(url + "/" + fn)
         if 'BEGIN PRIVATE KEY' in r:
             pout("sshkey", "%s/%s" % (url, fn))
+            message = str("sshkey", "%s/%s" % (url, fn))
+            logging.info(message)
         if 'BEGIN RSA PRIVATE KEY' in r:
             pout("sshkey", "%s/%s" % (url, fn))
+            message = str("sshkey", "%s/%s" % (url, fn))
+            logging.info(message)
         if 'BEGIN DSA PRIVATE KEY' in r:
             pout("sshkey", "%s/%s" % (url, fn))
+            message = str("sshkey", "%s/%s" % (url, fn))
+            logging.info(message)
 
 
 @DEFAULT
@@ -495,6 +580,8 @@ def test_dotenv(url):
     r = fetcher(url + "/.env")
     if "APP_ENV=" in r or "DB_PASSWORD=" in r:
         pout("dotenv", url + "/.env")
+        message = "dotenv", str(url) + "/.env"
+        logging.info(message)
 
 
 @DEFAULT
@@ -521,6 +608,8 @@ def test_invalidsrc(url):
             protocol = urllib.parse.urlparse(realurl).scheme
         except ValueError:
             pout("invalidsrc_brokenurl", escape(url), src)
+            message = str("invalidsrc_brokenurl", escape(url), src)
+            logging.info(message)
             continue
         if domain is None:
             continue
@@ -536,6 +625,8 @@ def test_invalidsrc(url):
 
         if dnscache(domain) is None:
             pout("invalidsrc_dns", url, escape(src))
+            message = str("invalidsrc_dns", url, escape(src))
+            logging.info(message)
             continue
 
         try:
@@ -543,11 +634,15 @@ def test_invalidsrc(url):
                                     redirect=False)
             if r.status >= 400:
                 pout("invalidsrc_http", url, escape(src))
+                message = str("invalidsrc_http", url, escape(src))
+                logging.info(message)
         except UnicodeEncodeError:
             pass
         except (ConnectionRefusedError, ConnectionResetError,
                 urllib3.exceptions.HTTPError):
             pout("invalidsrc_http_connfail", url, escape(src))
+            message = str("invalidsrc_http_connfail", url, escape(src))
+            logging.info(message)
 
 
 @DEFAULT
@@ -570,6 +665,9 @@ def test_ilias_defaultpw(url):
                     and (('class="ilBlockContent"' in data)
                          or ('class="ilAdminRow"' in data))):
                 pout("ilias_defaultpw", url, "root/homer")
+                message = "ilias_defaultpw", str(url), "root/homer"
+                logging.info(message)
+
         except (ConnectionRefusedError, ConnectionResetError,
                 urllib3.exceptions.HTTPError):
             pass
@@ -582,6 +680,8 @@ def test_cgiecho(url):
             r = poolmanager.request("GET", pre + "/" + randstring())
             if r.status == 500 and '<P><EM>cgiemail' in r.data.decode('ascii', errors='ignore'):
                 pout("cgiecho", pre)
+                message = "cgiecho", str(pre)
+                logging.info(message)
         except (ConnectionRefusedError, ConnectionResetError,
                 urllib3.exceptions.HTTPError):
             pass
@@ -595,6 +695,8 @@ def test_phpunit_eval(url):
         data = r.data.decode('ascii', errors='ignore')
         if data == "he12o":
             pout("phpunit_eval", url + "/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php")
+            message = "phpunit_eval", str(url) + "/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php"
+            logging.info(message)
     except (ConnectionRefusedError, ConnectionResetError,
             urllib3.exceptions.HTTPError):
         pass
@@ -615,10 +717,16 @@ def test_acmereflect(url):
         if data.startswith("<html>" + reflect):
             if ('content-type' in headers) and headers['content-type'].startswith("text/html"):
                 pout("acmereflect_html_sniff", url + "/.well-known/acme-challenge/reflect")
+                message = "acmereflect_html_sniff", str(url) + "/.well-known/acme-challenge/reflect"
+                logging.info(message)
                 return
             pout("acmereflect_html", url + "/.well-known/acme-challenge/reflect")
+            message = "acmereflect_html", str(url) + "/.well-known/acme-challenge/reflect"
+            logging.info(message)
             return
         pout("acmereflect", url + "/.well-known/acme-challenge/reflect")
+        message = "acmereflect", str(url) + "/.well-known/acme-challenge/reflect"
+        logging.info(message)
 
 
 @DEFAULT
@@ -626,6 +734,8 @@ def test_drupaldb(url):
     r = fetchpartial(url + "/sites/default/files/.ht.sqlite", 20, binary=True)
     if r and r[0:13] == b'SQLite format':
         pout("drupaldb", url + "/sites/default/files/.ht.sqlite")
+        message = "drupaldb", str(url) + "/sites/default/files/.ht.sqlite"
+        logging.info(message)
 
 
 @DEFAULT
@@ -635,6 +745,8 @@ def test_phpwarnings(url):
         if ('The session id is too long or contains illegal characters'
                 in r.data.decode('ascii', errors='ignore')):
             pout("phpwarnings", url)
+            message = "phpwarnings", str(url)
+            logging.info(message)
     except (urllib3.exceptions.HTTPError, UnicodeError,
             ConnectionRefusedError, ssl.SSLError):
         pass
@@ -645,6 +757,8 @@ def test_adminer(url):
     r = fetcher(url + "/adminer.php")
     if "adminer.org" in r:
         pout("adminer", url + "/adminer.php")
+        message = "adminer", str(url) + "/adminer.php"
+        logging.info(message)
 
 
 @DEFAULT
@@ -652,9 +766,13 @@ def test_elmah(url):
     r = fetcher(url + "/elmah.axd")
     if "Error Log for" in r:
         pout("elmah", url + "/elmah.axd")
+        message = "elmah", str(url) + "/elmah.axd"
+        logging.info(message)
     r = fetcher(url + "/scripts/elmah.axd")
     if "Error Log for" in r:
         pout("elmah", url + "/scripts/elmah.axd")
+        message = "elmah", str(url) + "/scripts/elmah.axd"
+        logging.info(message)
 
 
 @DEFAULT
@@ -665,6 +783,8 @@ def test_citrix_rce(url):
                                 headers={"NSC_USER": "x", "NSC_NONCE": "x"})
         if '<div id="nexttip">' in r.data.decode('ascii', errors='ignore'):
             pout("citrix_rce", url + "/vpn/../vpns/portal/tips.html")
+            message = "citrix_rce", str(url) + "/vpn/../vpns/portal/tips.html"
+            logging.info(message)
     except (urllib3.exceptions.HTTPError, UnicodeError,
             ConnectionRefusedError, ssl.SSLError):
         pass
@@ -683,6 +803,8 @@ def test_axfr(qhost):
             axfr = dns.zone.from_xfr(dns.query.xfr(r, qhost))
             if axfr:
                 pout("axfr", qhost, r)
+                message = str("axfr", qhost, r)
+                logging.info(message)
         except (dns.exception.DNSException, ConnectionResetError,
                 EOFError, socket.gaierror, ConnectionRefusedError,
                 TimeoutError, OSError):
@@ -697,11 +819,15 @@ def test_drupal(url):
             result = re.findall("Drupal [0-9.]*", r)
             version = result[0][7:]
             pout("drupal", url, version)
+            message = str("drupal", url, version)
+            logging.info(message)
         r = fetcher(url + "/core/CHANGELOG.txt")
         if r != "":
             result = re.findall("Drupal [0-9.]*", r)
             version = result[0][7:]
             pout("drupal", url, version)
+            message = str("drupal", url, version)
+            logging.info(message)
     except IndexError:
         pass
 
@@ -717,6 +843,8 @@ def test_wordpress(url):
             if not set(version).issubset("0123456789."):
                 return
             pout("wordpress", url, version)
+            message = str("wordpress", url, version)
+            logging.info(message)
     except NotImplementedError:
         # Necessary ddue to a python bug (remove in the future):
         # https://bugs.python.org/issue32876
@@ -738,33 +866,117 @@ def new_excepthook(etype, value, traceback):
     print("")
     sys.__excepthook__(etype, value, traceback)
 
-
 sys.excepthook = new_excepthook
 
+parser = argparse.ArgumentParser(prog='Snallygaster')
 
-parser = argparse.ArgumentParser()
-parser.add_argument("hosts", nargs='*', help="hostname to scan")
+parser.add_argument("hosts", nargs='*', help=argparse.SUPPRESS) # "hostname to scan"
 parser.add_argument("-t", "--tests", nargs=1,
-                    help="Comma-separated tests to run.")
+                    help=argparse.SUPPRESS) # "Comma-separated tests to run."
 parser.add_argument("--useragent", nargs=1,
-                    help="User agent to send")
+                    help=argparse.SUPPRESS) # "User agent to send"
 parser.add_argument("--nowww", action="store_true",
-                    help="Skip scanning www.[host]")
+                    help=argparse.SUPPRESS) # "Skip scanning www.[host]"
 parser.add_argument("--nohttp", action="store_true",
-                    help="Don't scan http")
+                    help=argparse.SUPPRESS) # "Don't scan http"
 parser.add_argument("--nohttps", action="store_true",
-                    help="Don't scan https")
+                    help=argparse.SUPPRESS) # "Don't scan https"
 parser.add_argument("-i", "--info", action="store_true",
-                    help="Enable all info tests (no bugs/security vulnerabilities)")
+                    help=argparse.SUPPRESS) # "Enable all info tests (no bugs/security vulnerabilities)"
 parser.add_argument("-n", "--noisy", action="store_true",
-                    help="Show noisy messages that indicate boring bugs, but no security issue")
+                    help=argparse.SUPPRESS) # "Show noisy messages that indicate boring bugs, but no security issue"
 parser.add_argument("-p", "--path", default='', action="store", type=str,
-                    help="Base path on server (scans root dir by default)")
+                    help=argparse.SUPPRESS) # "Base path on server (scans root dir by default)"
 parser.add_argument("-j", "--json", action="store_true",
-                    help="Produce JSON output")
+                    help=argparse.SUPPRESS) # "Produce JSON output"
 parser.add_argument("-d", "--debug", action="store_true",
-                    help="Show detailed debugging info")
+                    help=argparse.SUPPRESS) # "Show detailed debugging info"
+parser.add_argument("-menu", action="store_true", help="English Menu - python snallygaster -menu")
+parser.add_argument("-menuzh", action="store_true", help="华语菜单 - python snallygaster -menuzh")
 args = parser.parse_args()
+
+if args.menu == True:
+    message = "\n\n================================================================================================\n"
+    message += "||                                                                                            ||\n"
+    message += "||                                  WELCOME TO SNALLYGASTER!!                                 ||\n"
+    message += "||                                                                                            ||\n"
+    message += "||============================================================================================||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  Options                               | Command line examples (can be more than 1 url)    ||\n"
+    message += "||  -------                               | ----------------------------------------------    ||\n"
+    message += "||  1. Hostname to scan                   | (python snallygaster www.example.com)             ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  2. Comma-separated tests to run       | (python snallygaster -t www.example.com)          ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  3. User agent to send                 | (python snallygaster --useragent www.example.com) ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  4. Skip scanning www.[host]           | (python snallygaster --nowww example.com)         ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  5. Don't scan http                    | (python snallygaster --nohttp www.example.com)    ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  6. Don't scan https                   | (python snallygaster --nohttps www.example.com)   ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  7. Enable all info tests              | (python snallygaster -i www.example.com)          ||\n"
+    message += "||     (no bugs/security vulnerabilities) |                                                   ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  8. Show noisy messages that indicate  | (python snallygaster -n www.example.com)          ||\n"
+    message += "||     boring bugs, but no security issue | 	                                              ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  9. Base path on server                | (python snallygaster -p www.example.com)          ||\n"
+    message += "||     (scans root dir by default)        |                                                   ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  10. Produce JSON output               | (python snallygaster -j www.example.com)          ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  11. Show detailed debugging info      | (python snallygaster -d www.example.com)          ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||============================================================================================||\n"
+    message += "||                                                                                            ||\n"
+    message += "||                     提示: 华语菜单请输入 'python snallygaster -menuzh'                     ||\n"
+    message += "||                                                                                            ||\n" 
+    message += "================================================================================================\n"
+    print(message)
+
+if args.menuzh == True:
+    message = "\n\n================================================================================================\n"
+    message += "||                                                                                            ||\n"
+    message += "||                                  欢迎使用SNALLYGASTER!!                                    ||\n"
+    message += "||                                                                                            ||\n"
+    message += "||============================================================================================||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  选项                                  | 命令行例子 (允许输入超过一个网址)                 ||\n"
+    message += "||  ----                                  | ---------------------------------                 ||\n"
+    message += "||  1. 扫描网址                           | (python snallygaster www.example.com)             ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  2. 逗号分离进行多种测试               | (python snallygaster -t www.example.com)          ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  3. 用户代理进行发送                   | (python snallygaster --useragent www.example.com) ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  4. 跳过扫描www.[网址]                 | (python snallygaster --nowww example.com)         ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  5. 无需扫描http                       | (python snallygaster --nohttp www.example.com)    ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  6. 无需扫描https                      | (python snallygaster --nohttps www.example.com)   ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  7. 启动所有信息测试                   | (python snallygaster -i www.example.com)          ||\n"
+    message += "||     (没有错误bugs/安全漏洞)            |                                                   ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  8. 显示干扰信息表明无聊的漏洞，       | (python snallygaster -n www.example.com)          ||\n"
+    message += "||     不过没有安全问题                   | 	                                              ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  9. 伺服器的基础路径                   | (python snallygaster -p www.example.com)          ||\n"
+    message += "||     (根目录为基础扫描)                 |                                                   ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  10. 生成JSON输出                      | (python snallygaster -j www.example.com)          ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||  11. 显示详细的调试信息                | (python snallygaster -d www.example.com)          ||\n"
+    message += "||                                        |                                                   ||\n"
+    message += "||============================================================================================||\n"
+    message += "||                                                                                            ||\n"
+    message += "||                  Tips: English Menu please type 'python snallygaster -menu'                ||\n"
+    message += "||                                                                                            ||\n" 
+    message += "================================================================================================\n"
+    print(message)
+
 
 # Initializing global pool manager
 user_agent = {'user-agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:53.0) Gecko/20100101 Firefox/53.0'}
